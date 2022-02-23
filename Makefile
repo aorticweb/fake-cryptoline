@@ -13,7 +13,7 @@ lint: ## Run flake8
 migrate:
 	docker-compose up -d postgres
 	$(PY_RUN_CMD) postgres-wait alembic upgrade head
-	# $(PY_RUN_CMD) postgres-wait python3 ./db/migrations/populate_lookup.py
+	$(PY_RUN_CMD) postgres-wait python3 ./db/migrations/populate_lookup.py
 
 create-migration:
 	docker-compose up -d postgres
