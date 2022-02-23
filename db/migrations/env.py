@@ -1,11 +1,17 @@
+import logging
+from contextlib import contextmanager
 from logging.config import fileConfig
 from os import getenv
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from sqlalchemy.orm import Session, sessionmaker
 
 from db.schema import *  # noqa:
 from db.schema.common import Base
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,6 +35,19 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+@contextmanager
+def db_session(engine) -> Session:
+    """
+    Extra function to generate a sqlalchemy db session
+    to sync the lookup data
+    """
+    db = sessionmaker(autocommit=False, expire_on_commit=False, autoflush=False, bind=engine)()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def run_migrations_offline():
@@ -56,6 +75,10 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
+    # with db_session() as db_conn:
+    #     sync_lookup(db_conn)
+    #     db_conn.commit()
+
 
 def run_migrations_online():
     """Run migrations in 'online' mode.
@@ -75,6 +98,10 @@ def run_migrations_online():
 
         with context.begin_transaction():
             context.run_migrations()
+
+    # with db_session(connectable) as db_conn:
+    #     sync_lookup(db_conn)
+    #     db_conn.commit()
 
 
 if context.is_offline_mode():
