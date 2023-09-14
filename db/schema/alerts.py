@@ -26,7 +26,7 @@ class Alert(UUIDMixin, TimestampMixin, SoftDeleteixin, Base):
     strike_price = Column(
         Numeric(PRICE_DECIMAL_LEN + PRICE_INT_LEN, PRICE_DECIMAL_LEN), nullable=False
     )
-    coin_id = Column(Integer, ForeignKey("coin.id"), nullable=False)
+    coin_symbol = Column(Integer, ForeignKey("coin.symbol"), nullable=False)
     send_email = Column(Boolean, default=False, server_default="0")
     send_sms = Column(Boolean, default=False, server_default="0")
     priority = Column(Integer, default=1, server_default="1")

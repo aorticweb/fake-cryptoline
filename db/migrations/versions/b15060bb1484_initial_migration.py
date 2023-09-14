@@ -1,8 +1,8 @@
-"""first-migration
+"""initial_migration
 
-Revision ID: 12aed526a8a9
-Revises:
-Create Date: 2022-01-14 14:55:52.941166
+Revision ID: b15060bb1484
+Revises: 
+Create Date: 2022-04-29 01:05:29.501145
 
 """
 import sqlalchemy as sa
@@ -10,7 +10,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "12aed526a8a9"
+revision = "b15060bb1484"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -58,7 +58,6 @@ def upgrade():
     op.create_index(op.f("ix_user_user_name"), "user", ["user_name"], unique=True)
     op.create_table(
         "coin",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("symbol", sa.VARCHAR(length=30), nullable=False),
         sa.Column("name", sa.VARCHAR(length=100), nullable=False),
         sa.Column("chain_name", sa.VARCHAR(length=100), nullable=False),
@@ -68,7 +67,7 @@ def upgrade():
             ["type_id"],
             ["coin_type.id"],
         ),
-        sa.PrimaryKeyConstraint("id"),
+        sa.PrimaryKeyConstraint("symbol"),
         sa.UniqueConstraint("chain_name"),
         sa.UniqueConstraint("name"),
     )
@@ -91,15 +90,15 @@ def upgrade():
         sa.Column("deleted", sa.TIMESTAMP(), nullable=True),
         sa.Column("user_id", postgresql.UUID(), nullable=False),
         sa.Column("strike_price", sa.Numeric(precision=28, scale=18), nullable=False),
-        sa.Column("coin_id", sa.Integer(), nullable=False),
+        sa.Column("coin_symbol", sa.Integer(), nullable=False),
         sa.Column("send_email", sa.Boolean(), server_default="0", nullable=True),
         sa.Column("send_sms", sa.Boolean(), server_default="0", nullable=True),
         sa.Column("priority", sa.Integer(), server_default="1", nullable=True),
         sa.Column("repeat", sa.Boolean(), server_default="0", nullable=True),
         sa.CheckConstraint("priority BETWEEN 1 AND 3"),
         sa.ForeignKeyConstraint(
-            ["coin_id"],
-            ["coin.id"],
+            ["coin_symbol"],
+            ["coin.symbol"],
         ),
         sa.ForeignKeyConstraint(["user_id"], ["user.id"], ondelete="cascade"),
         sa.PrimaryKeyConstraint("id"),

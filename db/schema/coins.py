@@ -27,8 +27,7 @@ class CoinTypeEnum(Lookup):
 class Coin(Base):
     __tablename__ = "coin"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    symbol = Column(VARCHAR(30), nullable=False, index=True, unique=True)
+    symbol = Column(VARCHAR(30), primary_key=True, nullable=False, index=True, unique=True)
     name = Column(VARCHAR(100), nullable=False, unique=True)
     chain_name = Column(VARCHAR(100), nullable=False, unique=True)
     type_id = Column(Integer, ForeignKey("coin_type.id"), default=CoinTypeEnum.crypto.id)
